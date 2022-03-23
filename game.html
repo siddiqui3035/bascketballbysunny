@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name=viewport content="width=device-width, initial-scale=0.5">
+	<title></title>
+	<!--load links/scripts below (i.e. jquery, bootstrap, javascripts-->
+	<link rel="stylesheet" href="css/main.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+</head>
+<body id="gameBody">
+	<script src="javascript/main.js"></script>
+	<script src="javascript/basketball.js"></script>
+	<div id='canvasDiv'>
+		<canvas id="ballArea" width=1270px height=800px></canvas>
+		<canvas id="backCanvas" width=1270px height=800px></canvas>
+	</div>
+	<!-- <canvas id="hoopArea" width=1270px height=800px></canvas> -->
+	<script>
+	"use strict"
+
+
+		var newGame = new Game("ballArea");
+		var canvas = document.getElementById('ballArea');
+		var cntx = this.canvas.getContext('2d');
+
+		//create instances of objects on page (ball and hoop pieces)
+		var newBall = new Ball(100,650);
+		var newHoop = new Hoop(1200,250,1200,800)
+		var newScore = new Score();
+		var newAngle = new AngleClass();
+
+		//add instances to be rendered
+		newGame.addEntity(newBall);
+		newGame.addEntity(newHoop);
+		newGame.addEntity(newScore);
+		newGame.addEntity(newAngle);
+
+		//render the game (aka draw the canvas) at a rate of 90fps
+		var gameInterval = setInterval(function(){
+			newGame.render()
+		}, 1000/60)
+
+		// determine shot power
+		var theKeyIsDown = false;
+		//animate angle selector,
+		setInterval(function(){
+			newAngle.change(1,1);
+		}, 30)
+
+		// angleVelocity = {newAngle.y : [xVel, yVel]}
+		// this object of keys and values will determine the velocity of the ball
+		// depending on which y-coordinate the user releases on
+		var angleVelocity = {'524': [12,-34],
+							'525': [12,-34],
+							'526': [12,-34],
+							'527': [12,-34],
+							'528': [12,-34],
+							'529': [12,-34],
+							'530': [12,-34],
+							'531': [12,-34],
+							'532': [12,-34],
+							'533': [12,-34],
+							'534': [12,-33],
+							'535': [12,-33],
+							'536': [13,-33],
+							'537': [13,-32],
+							'538': [13,-32],
+							'539': [14,-32],
+							'540': [14,-31],
+							'541': [14,-31],
+							'542': [14,-31],
+							'543': [14,-30],
+							'544': [14,-30],
+							'545': [14,-30],
+							'546': [14,-29],
+							'547': [14,-29],
+							'548': [15,-29],
+							'549': [15,-28],
+							'550': [15,-28],
+							'551': [18,-28],
+							'552': [18,-27],
+							'553': [18,-27],
+							'554': [19,-27],
+							'555': [19,-26],
+							'556': [19,-26],
+							'557': [20,-26],
+							'558': [20,-25],
+							'559': [20,-25],
+							'560': [21,-24],
+							'561': [21,-24]}
+
+		//event listener to shoot the ball
+		var startTime
+		var endTime
+		$('body').on('keydown', function(event){
+			if (event.keyCode === 32 && theKeyIsDown === false){
+				startTime = event.timeStamp;
+				theKeyIsDown = true
+			}
+		})
+		$('body').on('keyup', function(event){
+			if (event.keyCode === 32 && theKeyIsDown === true){
+				endTime = event.timeStamp
+				var duration = (endTime - startTime)/100
+				if(newBall.x == 100 && newBall.y == 650) {
+					console.log(duration)
+					console.log(newAngle.y)
+					newBall.shot((duration+angleVelocity[newAngle.y][0]), angleVelocity[newAngle.y][1]);
+					// newBall.shot(0,2);
+				}
+				theKeyIsDown = false
+				// shotPower['startTime'] = 0
+				// shotPower['endTime'] = 0
+			}
+		})
+
+		//draw Flame Sprite
+		var flameImage = new Image();
+		flameImage.src = "./images/fire.png"
+		var flameWidth = 64
+		var flameHeight = 64
+		var flameFrames = 4
+		var currentFlameFrame = 0
+
+		var drawFlames = function(){
+			cntx.clearRect(400, 150, 300, 300)
+			cntx.drawImage(flameImage, flameWidth*currentFlameFrame, 0, flameWidth, flameHeight, 250, 115, 300, 300)
+			cntx.drawImage(flameImage, flameWidth*currentFlameFrame, 0, flameWidth, flameHeight, 450, 115, 300, 300)
+			cntx.drawImage(flameImage, flameWidth*currentFlameFrame, 0, flameWidth, flameHeight, 650, 115, 300, 300)
+
+			if (currentFlameFrame == flameFrames) {
+				currentFlameFrame = 0;
+			} else {
+				currentFlameFrame++
+			}
+		}
+	</script>
+	<script src="javascript/background.js"></script>
+</body>
+</html>
